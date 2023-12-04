@@ -53,7 +53,7 @@ if py_version != (3, 2):
     install_requires.append("Babel")
 
 setup(
-    name='wiki20',
+    name='ProteinDigest',
     version='0.1',
     description='',
     author='',
@@ -67,19 +67,19 @@ setup(
     extras_require={
         'testing': testpkgs
     },
-    package_data={'wiki20': [
+    package_data={'ProteinDigest': [
         'i18n/*/LC_MESSAGES/*.mo',
         'templates/*/*',
         'public/*/*'
     ]},
-    message_extractors={'wiki20': [
+    message_extractors={'ProteinDigest': [
         ('**.py', 'python', None),
         ('templates/**.xhtml', 'kajiki', {'strip_text': False, 'extract_python': True}),
         ('public/**', 'ignore', None)
     ]},
     entry_points={
         'paste.app_factory': [
-            'main = wiki20.config.application:make_app'
+            'main = ProteinDigest.config.application:make_app'
         ],
         'gearbox.plugins': [
             'turbogears-devtools = tg.devtools'
