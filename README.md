@@ -27,3 +27,8 @@ While developing you may want the server to reload after changes in package file
     $ gearbox serve --reload --debug
 
 Then you are ready to go.
+
+## Web Design
+
+index.xhtml: handle the front page
+master.xhtml: provide common degisn elements on every page
