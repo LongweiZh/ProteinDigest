@@ -15,6 +15,8 @@ from tgext.admin.controller import AdminController
 from ProteinDigest.lib.base import BaseController
 from ProteinDigest.controllers.error import ErrorController
 
+from ProteinDigest.model.protein_digest import *
+
 __all__ = ['RootController']
 
 
@@ -44,3 +46,9 @@ class RootController(BaseController):
     def index(self):
         """Front page"""
         return dict(title="ProteinDigest")
+
+    @expose('ProteinDigest.templates.test')
+    def test(self, taxid):
+        t = double(int(taxid))
+        title = "double: "+taxid
+        return dict(title=title,content=t)
