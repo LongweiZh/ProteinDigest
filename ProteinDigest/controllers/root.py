@@ -52,3 +52,9 @@ class RootController(BaseController):
         t = double(int(taxid))
         title = "double: "+taxid
         return dict(title=title,content=t)
+
+    @expose('ProteinDigest.templates.result')
+    def result(self, seq):
+        protein_digest_results = protein_digest(seq)
+        title = "Results"
+        return dict(title=title, results=protein_digest_results)

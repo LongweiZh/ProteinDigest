@@ -5,7 +5,7 @@ def double(a):
     return 2 * a
 
 
-class Peptide():
+class Peptide:
     def __init__(self, name, seq, miss):
         self.name = name
         self.seq = seq
@@ -15,7 +15,7 @@ class Peptide():
         return len(self.seq)
 
     def mw(self):
-        return mol_weight(seq)
+        return mol_weight(self.seq)
 
 
 def peptide_slice(slice, miss):
@@ -27,7 +27,7 @@ def peptide_slice(slice, miss):
     return results
 
 
-def protein_digest(seq, enzyme='trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=0):
+def protein_digest(seq, enzyme='trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=5):
     seq = seq.upper()
     pattern_data = {"trypsin": re.compile(r'(?<=[KR])(?=[^P])')}
     pattern = pattern_data["trypsin"]
@@ -37,7 +37,7 @@ def protein_digest(seq, enzyme='trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, 
     for miss_number in peptide_list.keys():
         for peptide in peptide_list[miss_number]:
             i = 1
-            a = Peptide(str(miss_number)+"_"+str(i), peptide, miss_number)
+            a = Peptide(name=(str(miss_number)+"_"+str(i)), seq=peptide, miss=miss_number)
             results.append(a)
     return results
 
@@ -66,18 +66,14 @@ def mol_weight(seq):
         'Y': 163.06333,
         'V': 99.06841,
     }
-    mw_seq = sum(amino_acid_masses[aa] for aa in seq) - (len(seq) - 1) * 18.01528
+    mw_seq = sum(amino_acid_masses[aa] for aa in seq) + 18.01528
     return mw_seq
 
+#a = 'AAKQQRCCKAARPAAR'
+#slice = protein_digest(a,miss=5)
+#for i in slice:
+#    print(i.seq,i.miss,i.mw())
 
-
-
-
-
-
-
-seq = "AAKQQRCCKAARPAAR"
-
-slice = protein_digest(seq,miss=100)
-for i in slice:
-    print(i.seq,i.miss,i.mw())
+#print(mol_weight('QQR'))
+#p = Peptide('a','QQR',5)
+#print(p.mw())
