@@ -16,14 +16,25 @@ from ProteinDigest.model.protein_digest import *
 
 __all__ = ['RootController']
 
-from formencode import validators, schema
+from formencode import validators, compound, schema
 
 
 class SearchFormValidator(schema.Schema):
     seq = validators.String(min=3, strip=True)
     enzyme = validators.OneOf(["Trypsin",
                                "Trypsin (C-term to K/R, even before P)",
-                               "Lys C"])
+                               "Lys C",
+                               "Lys N",
+                               "CNBr",
+                               "Arg C",
+                               "Asp N",
+                               "Glu C (bicarbonate)",
+                               "Glu C (phosphate)",
+                               "Microwave-assisted formic acid hydrolysis (C-term to D)",
+                               "Pepsin (pH 1.3)",
+                               "Pepsin (pH > 2)",
+                               "Proteinase K",
+                               "Thermolysin"])
     l_min = validators.Int(min=0)
     l_max = validators.Int(min=1)
     mw_min = validators.Int(min=0)
@@ -37,7 +48,18 @@ class SearchForm(twf.Form):
         enzyme = twf.SingleSelectField(label="Seach Mode",
                                        options=["Trypsin",
                                                 "Trypsin (C-term to K/R, even before P)",
-                                                "Lys C"],
+                                                "Lys C",
+                                                "Lys N",
+                                                "CNBr",
+                                                "Arg C",
+                                                "Asp N",
+                                                "Glu C (bicarbonate)",
+                                                "Glu C (phosphate)",
+                                                "Microwave-assisted formic acid hydrolysis (C-term to D)",
+                                                "Pepsin (pH 1.3)",
+                                                "Pepsin (pH > 2)",
+                                                "Proteinase K",
+                                                "Thermolysin"],
                                        prompt_text=None)
         l_min = twf.TextField(label="Min. Length")
         l_max = twf.TextField(label="Max. Length")

@@ -18,41 +18,41 @@ def peptide_slice(slice, miss):
     results = {}
     for i in range(1, miss + 2):
         result_list = ["".join(slice[j:j + i]) for j in range(len(slice) - i + 1)]
-        if result_list != []:
-            results[i - 1] = result_list
+        if result_list:
+            results[i - 1] = set(result_list)
     return results
 
 
 def protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
     seq = seq.upper()
     pattern_data = {"Trypsin": re.compile(r'(?<=[KR])(?=[^P])'),
-                    "Trypsin (C-term to K/R, even before P)": re.compile(r'(?<=[KR])'),
-                    "Lys C": re.compile(r'(?<=[KR])'),
-                    "Lys N": re.compile(r'(?<=[KR])'),
-                    "CNBr": re.compile(r''),
-                    "Arg C": re.compile(r''),
-                    "Asp N": re.compile(r''),
-                    "Asp N + Lys C": re.compile(r''),
-                    "Glu C (bicarbonate)": re.compile(r''),
-                    "Glu C (phosphate)": re.compile(r''),
-                    "Microwave-assisted formic acid hydrolysis (C-term to D)": re.compile(r''),
-                    "Pepsin (pH 1.3)": re.compile(r''),
-                    "Pepsin (pH > 2)": re.compile(r''),
-                    "Proteinase K": re.compile(r''),
-                    "Thermolysin": re.compile(r'')}
+                    "Trypsin (C-term to K/R, even before P)": re.compile(r'(?<=[KR])(?=.)'),
+                    "Lys C": re.compile(r'(?<=[K])(?=.)'),
+                    "Lys N": re.compile(r'(?<=.)(?=K)'),
+                    "CNBr": re.compile(r'(?<=[M])(?=.)'),
+                    "Arg C": re.compile(r'(?<=[R])(?=[^P])'),
+                    "Asp N": re.compile(r'(?<=.)(?=D)'),
+                    "Glu C (bicarbonate)": re.compile(r'(?<=[E])(?=[^PE])'),
+                    "Glu C (phosphate)": re.compile(r'(?<=[DE])(?=[^PE])'),
+                    "Microwave-assisted formic acid hydrolysis (C-term to D)": re.compile(r'(?<=[D])(?=.)'),
+                    "Pepsin (pH 1.3)": re.compile(r'(?<=[FL])(?=.)'),
+                    "Pepsin (pH > 2)": re.compile(r'(?<=[FLWYAEQ])(?=.)'),
+                    "Proteinase K": re.compile(r'(?<=[AFYWLIV])(?=.)'),
+                    "Thermolysin": re.compile(r'(?<=[DE])(?=AFILMV)')}
     pattern = pattern_data[enzyme]
     slice = pattern.split(seq)
     peptide_list = peptide_slice(slice, miss)
+    print('---splice-----')
+    print(peptide_list)
     candidates = []
     results = []
     for miss_number in peptide_list.keys():
         for peptide in peptide_list[miss_number]:
-            i = 1
-            a = Peptide(name=(str(miss_number) + "_" + str(i)), seq=peptide, miss=miss_number)
+            a = Peptide(name=peptide, seq=peptide, miss=miss_number)
             candidates.append(a)
 
     for candidate in candidates:
-        if int(l_min) < candidate.length() < int(l_max) and int(mw_min) < candidate.mw() < int(mw_max):
+        if int(l_min) <= candidate.length() <= int(l_max) and int(mw_min) <= candidate.mw() <= int(mw_max):
             results.append(candidate)
     return results
 
@@ -81,11 +81,11 @@ def mol_weight(seq):
         'Y': 163.06333,
         'V': 99.06841,
     }
-    mw_seq = sum(amino_acid_masses[aa] for aa in seq) + 18.01528
+    mw_seq = round(sum(amino_acid_masses[aa] for aa in seq) + 18.01528,2)
     return mw_seq
 
 
-a = 'AAKQQRCCKAARPAAR'
-slice = protein_digest(a, "Trypsin", 1, 5, 0, 10000, 2)
+a = 'AFYWLIVAFYWLIV'
+slice = protein_digest(a, "Proteinase K", 1, 5, 0, 10000, 2)
 for i in slice:
     print(i.seq, i.miss, i.mw())
