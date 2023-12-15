@@ -3,6 +3,7 @@
 
 import tw2.forms as twf
 from tg import expose
+from tg import validate
 from tg import tmpl_context
 from tgext.admin.controller import AdminController
 from tgext.admin.tgadminconfig import BootstrapTGAdminConfig as TGAdminConfig
@@ -17,12 +18,18 @@ __all__ = ['RootController']
 
 from formencode import validators, schema
 
+
 class SearchFormValidator(schema.Schema):
-    seq = validators.String(min=3,strip=True)
+    seq = validators.String(min=3, strip=True)
+    enzyme = validators.OneOf(["Trypsin",
+                               "Trypsin (C-term to K/R, even before P)",
+                               "Lys C"])
     l_min = validators.Int(min=0)
     l_max = validators.Int(min=1)
     mw_min = validators.Int(min=0)
-    mw_min = validators.Int(min=1)
+    mw_max = validators.Int(min=1)
+    miss = validators.Int(min=0)
+
 
 class SearchForm(twf.Form):
     class child(twf.TableLayout):
@@ -43,37 +50,23 @@ class SearchForm(twf.Form):
 
     action = '/double'
     submit = twf.SubmitButton(value="Digest")
+    validator = SearchFormValidator
 
 
 class RootController(BaseController):
-    """
-    The root controller for the ProteinDigest application.
-
-    All the other controllers and WSGI applications should be mounted on this
-    controller. For example::
-
-        panel = ControlPanelController()
-        another_app = AnotherWSGIApplication()
-
-    Keep in mind that WSGI applications shouldn't be mounted directly: They
-    must be wrapped around with :class:`tg.controllers.WSGIAppController`.
-
-    """
     secc = SecureController()
     admin = AdminController(model, DBSession, config_type=TGAdminConfig)
 
     # error = ErrorController()
 
-    def _before(self, *args, **kw):
-        tmpl_context.project_name = "ProteinDigest"
-
     @expose('ProteinDigest.templates.index')
-    def index(self):
+    def index(self, *args, **kw):
         """Front page"""
         return dict(title="ProteinDigest",
                     form=SearchForm)
 
     @expose('ProteinDigest.templates.double')
+    @validate(SearchForm, error_handler=index)
     def double(self, seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
         protein_digest_result = protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, int(miss))
         return dict(title="Double", results=protein_digest_result)
