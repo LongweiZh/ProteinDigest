@@ -22,7 +22,7 @@ def peptide_slice(slice, miss):
     return results
 
 
-def protein_digest(seq, enzyme='trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=0):
+def protein_digest(seq, enzyme='Trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=0):
     seq = seq.upper()
     pattern_data = {"Trypsin": re.compile(r'(?<=[KR])(?=[^P])'),
                     "Trypsin (C-term to K/R, even before P)": re.compile(r'(?<=[KR])'),
@@ -78,11 +78,14 @@ def mol_weight(seq):
     mw_seq = sum(amino_acid_masses[aa] for aa in seq) + 18.01528
     return mw_seq
 
-#a = 'AAKQQRCCKAARPAAR'
-#slice = protein_digest(a,miss=5)
-#for i in slice:
-#    print(i.seq,i.miss,i.mw())
+a = 'AAKQQRCCKAARPAAR'
+slice = protein_digest(a)
+for i in slice:
+    print(i.seq,i.miss,i.mw())
 
-#print(mol_weight('QQR'))
-#p = Peptide('a','QQR',5)
-#print(p.mw())
+print(mol_weight('QQR'))
+p = Peptide('a','QQR',5)
+print(p.mw())
+
+print('---')
+print(slice)

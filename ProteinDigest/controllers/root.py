@@ -58,7 +58,8 @@ class RootController(BaseController):
     """
     secc = SecureController()
     admin = AdminController(model, DBSession, config_type=TGAdminConfig)
-    error = ErrorController()
+
+    #error = ErrorController()
 
     def _before(self, *args, **kw):
         tmpl_context.project_name = "ProteinDigest"
@@ -70,7 +71,12 @@ class RootController(BaseController):
                     form=SearchForm)
 
     @expose('ProteinDigest.templates.digest')
-    def result(self, seq):
-        protein_digest_results = protein_digest(seq=seq)
+    def result(self, a):
+        protein_digest_results = a
         title = "Results"
         return dict(title=title, results=protein_digest_results)
+
+    @expose('ProteinDigest.templates.double')
+    def double(self, seq):
+        protein_digest_result = protein_digest(seq)
+        return dict(title="Double", num=seq)
