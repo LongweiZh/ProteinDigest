@@ -19,8 +19,8 @@
                 <td>${i.length()}</td>
                 <td>${i.mw()}</td>
                 <td>${i.miss}</td>
-                <td py:for="j in i.l">${j}</td>
-                <td py:for="j in i.r">${j}</td>
+                <td>${', '.join(i.l)}</td>
+                <td>${', '.join(i.l)}</td>
             </tr>
         </table>
     </P>
