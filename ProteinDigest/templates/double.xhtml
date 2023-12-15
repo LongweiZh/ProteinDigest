@@ -4,6 +4,19 @@
     </head>
 
     <body py:block="body" py:strip="True">
-    ${num}
+    <P>
+        <table class="table">
+            <tr>
+                <th>Peptide Sequence</th>
+                <th>Molecular Weight</th>
+                <th>Miss Cleavage</th>
+            </tr>
+            <tr py:for="i in results">
+                <td>${i.seq}</td>
+                <td>${i.mw()}</td>
+                <td>${i.miss}</td>
+            </tr>
+        </table>
+    </P>
     </body>
 </html>

@@ -1,25 +1,28 @@
 # -*- coding: utf-8 -*-
 """Main Controller"""
 
-from tg import expose, flash, require, url, lurl
-from tg import request, redirect, tmpl_context
-from tg.i18n import ugettext as _, lazy_ugettext as l_
-from tg.exceptions import HTTPFound
-from tg import predicates
+import tw2.forms as twf
+from tg import expose
+from tg import tmpl_context
+from tgext.admin.controller import AdminController
+from tgext.admin.tgadminconfig import BootstrapTGAdminConfig as TGAdminConfig
+
 from ProteinDigest import model
 from ProteinDigest.controllers.secure import SecureController
-from ProteinDigest.model import DBSession
-from tgext.admin.tgadminconfig import BootstrapTGAdminConfig as TGAdminConfig
-from tgext.admin.controller import AdminController
-
 from ProteinDigest.lib.base import BaseController
-from ProteinDigest.controllers.error import ErrorController
-
+from ProteinDigest.model import DBSession
 from ProteinDigest.model.protein_digest import *
-import tw2.forms as twf
 
 __all__ = ['RootController']
 
+from formencode import validators, schema
+
+class SearchFormValidator(schema.Schema):
+    seq = validators.String(min=3,strip=True)
+    l_min = validators.Int(min=0)
+    l_max = validators.Int(min=1)
+    mw_min = validators.Int(min=0)
+    mw_min = validators.Int(min=1)
 
 class SearchForm(twf.Form):
     class child(twf.TableLayout):
@@ -38,7 +41,7 @@ class SearchForm(twf.Form):
         css_class = 'table'
         attrs = {'style': 'width: 600px;'}
 
-    action = '/digest'
+    action = '/double'
     submit = twf.SubmitButton(value="Digest")
 
 
@@ -59,7 +62,7 @@ class RootController(BaseController):
     secc = SecureController()
     admin = AdminController(model, DBSession, config_type=TGAdminConfig)
 
-    #error = ErrorController()
+    # error = ErrorController()
 
     def _before(self, *args, **kw):
         tmpl_context.project_name = "ProteinDigest"
@@ -70,13 +73,7 @@ class RootController(BaseController):
         return dict(title="ProteinDigest",
                     form=SearchForm)
 
-    @expose('ProteinDigest.templates.digest')
-    def result(self, a):
-        protein_digest_results = a
-        title = "Results"
-        return dict(title=title, results=protein_digest_results)
-
     @expose('ProteinDigest.templates.double')
-    def double(self, seq):
-        protein_digest_result = protein_digest(seq)
-        return dict(title="Double", num=seq)
+    def double(self, seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
+        protein_digest_result = protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, int(miss))
+        return dict(title="Double", results=protein_digest_result)

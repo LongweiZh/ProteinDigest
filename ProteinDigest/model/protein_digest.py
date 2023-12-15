@@ -1,5 +1,6 @@
 import re
 
+
 class Peptide:
     def __init__(self, name, seq, miss):
         self.name = name
@@ -22,7 +23,7 @@ def peptide_slice(slice, miss):
     return results
 
 
-def protein_digest(seq, enzyme='Trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=0):
+def protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
     seq = seq.upper()
     pattern_data = {"Trypsin": re.compile(r'(?<=[KR])(?=[^P])'),
                     "Trypsin (C-term to K/R, even before P)": re.compile(r'(?<=[KR])'),
@@ -42,12 +43,17 @@ def protein_digest(seq, enzyme='Trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, 
     pattern = pattern_data[enzyme]
     slice = pattern.split(seq)
     peptide_list = peptide_slice(slice, miss)
+    candidates = []
     results = []
     for miss_number in peptide_list.keys():
         for peptide in peptide_list[miss_number]:
             i = 1
-            a = Peptide(name=(str(miss_number)+"_"+str(i)), seq=peptide, miss=miss_number)
-            results.append(a)
+            a = Peptide(name=(str(miss_number) + "_" + str(i)), seq=peptide, miss=miss_number)
+            candidates.append(a)
+
+    for candidate in candidates:
+        if int(l_min) < candidate.length() < int(l_max) and int(mw_min) < candidate.mw() < int(mw_max):
+            results.append(candidate)
     return results
 
 
@@ -78,14 +84,8 @@ def mol_weight(seq):
     mw_seq = sum(amino_acid_masses[aa] for aa in seq) + 18.01528
     return mw_seq
 
+
 a = 'AAKQQRCCKAARPAAR'
-slice = protein_digest(a)
+slice = protein_digest(a, "Trypsin", 1, 5, 0, 10000, 2)
 for i in slice:
-    print(i.seq,i.miss,i.mw())
-
-print(mol_weight('QQR'))
-p = Peptide('a','QQR',5)
-print(p.mw())
-
-print('---')
-print(slice)
+    print(i.seq, i.miss, i.mw())
