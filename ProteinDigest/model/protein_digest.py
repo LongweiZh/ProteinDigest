@@ -1,10 +1,5 @@
 import re
 
-
-def double(a):
-    return 2 * a
-
-
 class Peptide:
     def __init__(self, name, seq, miss):
         self.name = name
@@ -27,10 +22,24 @@ def peptide_slice(slice, miss):
     return results
 
 
-def protein_digest(seq, enzyme='trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=5):
+def protein_digest(seq, enzyme='trypsin', l_min=0, l_max=0, mw_min=0, mw_max=0, miss=0):
     seq = seq.upper()
-    pattern_data = {"trypsin": re.compile(r'(?<=[KR])(?=[^P])')}
-    pattern = pattern_data["trypsin"]
+    pattern_data = {"Trypsin": re.compile(r'(?<=[KR])(?=[^P])'),
+                    "Trypsin (C-term to K/R, even before P)": re.compile(r'(?<=[KR])'),
+                    "Lys C": re.compile(r'(?<=[KR])'),
+                    "Lys N": re.compile(r'(?<=[KR])'),
+                    "CNBr": re.compile(r''),
+                    "Arg C": re.compile(r''),
+                    "Asp N": re.compile(r''),
+                    "Asp N + Lys C": re.compile(r''),
+                    "Glu C (bicarbonate)": re.compile(r''),
+                    "Glu C (phosphate)": re.compile(r''),
+                    "Microwave-assisted formic acid hydrolysis (C-term to D)": re.compile(r''),
+                    "Pepsin (pH 1.3)": re.compile(r''),
+                    "Pepsin (pH > 2)": re.compile(r''),
+                    "Proteinase K": re.compile(r''),
+                    "Thermolysin": re.compile(r'')}
+    pattern = pattern_data[enzyme]
     slice = pattern.split(seq)
     peptide_list = peptide_slice(slice, miss)
     results = []
