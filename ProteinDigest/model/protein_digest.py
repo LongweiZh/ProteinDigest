@@ -27,6 +27,7 @@ def peptide_slice(slice, miss):
 
 def protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
     seq = seq.upper()
+    seq = seq.replace(' ','')
     pattern_data = {"Trypsin": re.compile(r'(?<=[KR])(?=[^P])'),
                     "Trypsin (C-term to K/R, even before P)": re.compile(r'(?<=[KR])(?=.)'),
                     "Lys C": re.compile(r'(?<=[K])(?=.)'),
@@ -40,7 +41,7 @@ def protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
                     "Pepsin (pH 1.3)": re.compile(r'(?<=[FL])(?=.)'),
                     "Pepsin (pH > 2)": re.compile(r'(?<=[FLWYAEQ])(?=.)'),
                     "Proteinase K": re.compile(r'(?<=[AFYWLIV])(?=.)'),
-                    "Thermolysin": re.compile(r'(?<=[DE])(?=AFILMV)')}
+                    "Thermolysin": re.compile(r'(?<=[DE])(?=[AFILMV])')}
     pattern = pattern_data[enzyme]
     slice = pattern.split(seq)
     peptide_list = peptide_slice(slice, miss)
@@ -59,7 +60,7 @@ def protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
             e = set()
             for i in pos_end:
                 try:
-                    e.add(seq[i+1])
+                    e.add(seq[i])
                 except IndexError:
                     e.add('End')
             a = Peptide(name=peptide, seq=peptide, miss=miss_number, l=s, r=e)
@@ -101,7 +102,7 @@ def mol_weight(seq):
     return mw_seq
 
 
-# a = 'AFYWLIVAFYWLIV'
-# slice = protein_digest(a, "Proteinase K", 1, 5, 0, 10000, 2)
-# for i in slice:
-#     print(i.seq, i.miss, i.mw())
+a = 'MGKKQNRKTGNSKTQSASPPPKERSSSPATEQSWMENDFDELREEGFRRSNYSELREDIQTKGKEVENFEKNLEECITRITNTEKCLKELMELKTKARELREECRSLRSRCDQLEERVSAMEDEMNEMKREGKFREKRIKRNEQSLQEIWDYVKRPNLRLIGVPESDVENGTKLENTLQDIIQENFPNLARQANVQIQEIQRTPQRYSSRRATPRHIIVRFTKVEMKEKMLRAAREKGRVTLKGKPIRLTADLSAETLQARREWGPIFNILKEKNFQPRISYPAKLSFISEGEIKYFIDKQMLRDFVTTRPALKELLKEALNMERNNRYQPLQNHAKM'
+slice = protein_digest(a, "Trypsin", 1, 100000, 0, 100000000, 5)
+for i in slice:
+    print(i.seq, i.l, i.r)

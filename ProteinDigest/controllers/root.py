@@ -20,7 +20,7 @@ from formencode import validators, compound, schema
 
 
 class SearchFormValidator(schema.Schema):
-    seq = compound.All(validators.Regex(r'^[ACDEFGHIKLMNPQRSTVWY]+$'),
+    seq = compound.All(validators.Regex(r'^[ACDEFGHIKLMNPQRSTVWYacdefghiklmnpqrstvwy\s]+$'),
                        validators.String(min=3, strip=True))
     enzyme = validators.OneOf(["Trypsin",
                                "Trypsin (C-term to K/R, even before P)",
@@ -94,7 +94,7 @@ class RootController(BaseController):
         try:
             l_min = int(l_min)
         except ValueError and TypeError:
-            l_min = 0
+            l_min = 3
         try:
             l_max = int(l_max)
         except ValueError and TypeError:
