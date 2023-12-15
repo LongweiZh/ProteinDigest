@@ -33,3 +33,5 @@ Then you are ready to go.
 Amino Acid Molecular Weight: [ThermoFisher](https://www.thermofisher.com/us/en/home/references/ambion-tech-support/rna-tools-and-calculators/proteins-and-amino-acids.html)
 
 Cleavage rules: [PeptideMass](https://web.expasy.org/peptide_mass/peptide-mass-doc.html#table1)
+
+GitHub: [ProteinDigest](https://github.com/LongweiZh/ProteinDigest)
