@@ -85,7 +85,7 @@ def mol_weight(seq):
     return mw_seq
 
 
-a = 'AFYWLIVAFYWLIV'
-slice = protein_digest(a, "Proteinase K", 1, 5, 0, 10000, 2)
-for i in slice:
-    print(i.seq, i.miss, i.mw())
+# a = 'AFYWLIVAFYWLIV'
+# slice = protein_digest(a, "Proteinase K", 1, 5, 0, 10000, 2)
+# for i in slice:
+#     print(i.seq, i.miss, i.mw())

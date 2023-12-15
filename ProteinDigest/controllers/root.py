@@ -20,7 +20,8 @@ from formencode import validators, compound, schema
 
 
 class SearchFormValidator(schema.Schema):
-    seq = validators.String(min=3, strip=True)
+    seq = compound.All(validators.Regex(r'^[ACDEFGHIKLMNPQRSTVWY]+$'),
+                       validators.String(min=3, strip=True))
     enzyme = validators.OneOf(["Trypsin",
                                "Trypsin (C-term to K/R, even before P)",
                                "Lys C",
@@ -36,16 +37,16 @@ class SearchFormValidator(schema.Schema):
                                "Proteinase K",
                                "Thermolysin"])
     l_min = validators.Int(min=0)
-    l_max = validators.Int(min=1)
+    l_max = validators.Int(min=2)
     mw_min = validators.Int(min=0)
-    mw_max = validators.Int(min=1)
+    mw_max = validators.Int(min=0)
     miss = validators.Int(min=0)
 
 
 class SearchForm(twf.Form):
     class child(twf.TableLayout):
         seq = twf.TextField(label="Protein Sequence")
-        enzyme = twf.SingleSelectField(label="Seach Mode",
+        enzyme = twf.SingleSelectField(label="Enzyme",
                                        options=["Trypsin",
                                                 "Trypsin (C-term to K/R, even before P)",
                                                 "Lys C",
@@ -90,5 +91,25 @@ class RootController(BaseController):
     @expose('ProteinDigest.templates.double')
     @validate(SearchForm, error_handler=index)
     def double(self, seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
-        protein_digest_result = protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, int(miss))
-        return dict(title="Double", results=protein_digest_result)
+        try:
+            l_min = int(l_min)
+        except ValueError and TypeError:
+            l_min = 0
+        try:
+            l_max = int(l_max)
+        except ValueError and TypeError:
+            l_max = 1000
+        try:
+            mw_min = int(mw_min)
+        except ValueError and TypeError:
+            mw_min = 0
+        try:
+            mw_max = int(mw_max)
+        except ValueError and TypeError:
+            mw_max = 1000000000
+        try:
+            miss = int(miss)
+        except ValueError and TypeError:
+            miss = 0
+        protein_digest_result = protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss)
+        return dict(title="Digest", results=protein_digest_result)
