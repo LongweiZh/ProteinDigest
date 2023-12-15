@@ -1,4 +1,4 @@
-<html py:extends="master.xhtml" py:strip="True">
+<html py:extends="master.xhtml" py:strip="True" xmlns:py="">
     <head py:block="head" py:strip="True">
         <title py:block="master_title">${title}</title>
     </head>
@@ -8,13 +8,19 @@
         <table class="table">
             <tr>
                 <th>Peptide Sequence</th>
-                <th>Molecular Weight</th>
+                <th>Length</th>
+                <th>Molecular Weight/Da</th>
                 <th>Miss Cleavage</th>
+                <th>Left Amino Acid</th>
+                <th>Right Amino Acid</th>
             </tr>
             <tr py:for="i in results">
                 <td>${i.seq}</td>
+                <td>${i.length()}</td>
                 <td>${i.mw()}</td>
                 <td>${i.miss}</td>
+                <td py:for="j in i.l">${j}</td>
+                <td py:for="j in i.r">${j}</td>
             </tr>
         </table>
     </P>

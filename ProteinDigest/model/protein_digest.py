@@ -2,10 +2,12 @@ import re
 
 
 class Peptide:
-    def __init__(self, name, seq, miss):
+    def __init__(self, name, seq, miss, l, r):
         self.name = name
         self.seq = seq
         self.miss = miss
+        self.l = l
+        self.r = r
 
     def length(self):
         return len(self.seq)
@@ -42,46 +44,60 @@ def protein_digest(seq, enzyme, l_min, l_max, mw_min, mw_max, miss):
     pattern = pattern_data[enzyme]
     slice = pattern.split(seq)
     peptide_list = peptide_slice(slice, miss)
-    print('---splice-----')
-    print(peptide_list)
     candidates = []
     results = []
     for miss_number in peptide_list.keys():
         for peptide in peptide_list[miss_number]:
-            a = Peptide(name=peptide, seq=peptide, miss=miss_number)
+            pos_start = [i.start() for i in re.finditer(peptide,seq)]
+            s = set()
+            for i in pos_start:
+                if i == 0:
+                    s.add('Start')
+                else:
+                    s.add(seq[i-1])
+            pos_end = [i.end() for i in re.finditer(peptide, seq)]
+            e = set()
+            for i in pos_end:
+                try:
+                    e.add(seq[i+1])
+                except IndexError:
+                    e.add('End')
+            a = Peptide(name=peptide, seq=peptide, miss=miss_number, l=s, r=e)
             candidates.append(a)
 
     for candidate in candidates:
         if int(l_min) <= candidate.length() <= int(l_max) and int(mw_min) <= candidate.mw() <= int(mw_max):
             results.append(candidate)
+
+    results = sorted(results, key=lambda x:x.mw(), reverse=True)
     return results
 
 
 def mol_weight(seq):
     amino_acid_masses = {
-        'A': 71.03711,
-        'R': 156.10111,
-        'N': 114.04293,
-        'D': 115.02694,
-        'C': 103.00919,
-        'E': 129.04259,
-        'Q': 128.05858,
-        'G': 57.02146,
-        'H': 137.05891,
-        'I': 113.08406,
-        'L': 113.08406,
-        'K': 128.09496,
-        'M': 131.04049,
-        'F': 147.06841,
-        'P': 97.05276,
-        'S': 87.03203,
-        'T': 101.04768,
-        'U': 150.95363,
-        'W': 186.07931,
-        'Y': 163.06333,
-        'V': 99.06841,
+        'A': 89.1,
+        'R': 174.2,
+        'N': 132.1,
+        'D': 133.1,
+        'C': 121.2,
+        'E': 147.1,
+        'Q': 146.2,
+        'G': 75.1,
+        'H': 155.2,
+        'I': 131.2,
+        'L': 131.2,
+        'K': 146.2,
+        'M': 149.2,
+        'F': 165.2,
+        'P': 115.1,
+        'S': 105.1,
+        'T': 119.1,
+        'U': 204.2,
+        'W': 204.2,
+        'Y': 181.2,
+        'V': 117.1,
     }
-    mw_seq = round(sum(amino_acid_masses[aa] for aa in seq) + 18.01528,2)
+    mw_seq = round(sum(amino_acid_masses[aa] for aa in seq) - 18.0 * (len(seq) - 1),1)
     return mw_seq
 
 

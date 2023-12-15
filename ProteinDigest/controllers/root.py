@@ -64,8 +64,8 @@ class SearchForm(twf.Form):
                                        prompt_text=None)
         l_min = twf.TextField(label="Min. Length")
         l_max = twf.TextField(label="Max. Length")
-        mw_min = twf.TextField(label="Min. Molecular Weight")
-        mw_max = twf.TextField(label="Max. Molecular Weight")
+        mw_min = twf.TextField(label="Min. Molecular Weight/Da")
+        mw_max = twf.TextField(label="Max. Molecular Weight/Da")
         miss = twf.TextField(label="Miss Cleavage")
 
         css_class = 'table'

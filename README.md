@@ -28,7 +28,8 @@ While developing you may want the server to reload after changes in package file
 
 Then you are ready to go.
 
-## Web Design
+## Reference
 
-index.xhtml: handle the front page
-master.xhtml: provide common degisn elements on every page
+Amino Acid Molecular Weight: [ThermoFisher](https://www.thermofisher.com/us/en/home/references/ambion-tech-support/rna-tools-and-calculators/proteins-and-amino-acids.html)
+
+Cleavage rules: [PeptideMass](https://web.expasy.org/peptide_mass/peptide-mass-doc.html#table1)
